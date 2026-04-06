@@ -4,7 +4,7 @@
 =============================================
 */
 
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = 'https://daa-smartrescue.onrender.com';
 
 // ═══════════════════════════════════════════════════════════════
 //  1. LEAFLET MAP INITIALIZATION
@@ -61,7 +61,7 @@ const loadoutSummary = document.getElementById('loadout-summary');
 btnCalcLoadout.addEventListener('click', async () => {
     // 1. Get capacity from slider
     const capacity = parseInt(capacitySlider.value, 10);
-    
+
     // 2. Initial UI loading state
     inventoryTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Calculating DP Matrix...</td></tr>';
     loadoutSummary.classList.add('hidden');
@@ -83,7 +83,7 @@ btnCalcLoadout.addEventListener('click', async () => {
         if (data.status === 'success') {
             // 4. Update Table
             inventoryTableBody.innerHTML = '';
-            
+
             if (data.items_selected.length === 0) {
                 inventoryTableBody.innerHTML = '<tr><td colspan="3" class="empty-state">Capacity too low. No items selected.</td></tr>';
             } else {
@@ -141,7 +141,7 @@ const btnCalcRoute = document.getElementById('btn-calc-route');
 const routeOutput = document.getElementById('route-output');
 
 btnCalcRoute.addEventListener('click', async () => {
-    
+
     // 1. Initial UI Loading State
     routeOutput.innerHTML = '<span>Branching and Bounding...</span>';
     routeOutput.classList.remove('empty');
@@ -153,14 +153,14 @@ btnCalcRoute.addEventListener('click', async () => {
         const response = await fetch(`${API_BASE_URL}/api/tsp`, {
             method: 'POST'
         });
-        
+
         const data = await response.json();
 
         if (data.status === 'success') {
-            
+
             if (data.route_names.length === 0) {
-                 routeOutput.innerHTML = `<span style="color:#FF2A6D;">No valid route found. Grpah may be disconnected.</span>`;
-                 return;
+                routeOutput.innerHTML = `<span style="color:#FF2A6D;">No valid route found. Grpah may be disconnected.</span>`;
+                return;
             }
 
             // 3. Format the route visually
@@ -188,11 +188,11 @@ btnCalcRoute.addEventListener('click', async () => {
                     </div>
                 </div>
             `;
-            
+
         } else {
-             throw new Error(data.message);
+            throw new Error(data.message);
         }
-    } catch(error) {
+    } catch (error) {
         console.error("Error calculating TSP route:", error);
         routeOutput.innerHTML = `<span style="color:#FF2A6D; text-align:center;">Error: Could not connect to API.</span>`;
     } finally {
