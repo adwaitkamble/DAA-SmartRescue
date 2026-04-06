@@ -247,6 +247,27 @@ input[type=range]::-webkit-slider-runnable-track {
     border-radius: 3px;
 }
 
+/* Custom Select & Text Inputs */
+.custom-select, .custom-input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-main);
+    padding: 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    outline: none;
+    flex-grow: 1;
+}
+.custom-select:focus, .custom-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px var(--primary-glow);
+}
+.custom-select option {
+    background: var(--bg-panel-solid);
+    color: var(--text-main);
+}
+
 /* --- Buttons --- */
 .btn {
     display: flex;

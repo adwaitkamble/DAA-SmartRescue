@@ -7,6 +7,7 @@ Exposes algorithm endpoints for Floyd-Warshall, 0/1 Knapsack, and TSP.
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import copy
 
 from data import city_graph, inventory_db, LOCATIONS, INF
 from algorithms import (
@@ -168,11 +169,25 @@ def knapsack_endpoint():
 def tsp_endpoint():
     """
     POST /api/tsp
+    Expects optional JSON: { "overrides": [{"u": int, "v": int, "time": float}, ...] }
     Runs Branch & Bound TSP on the city graph and returns the
     optimal multi-stop route and total travel time.
     """
     try:
-        best_path, best_cost = plan_multi_stop_route(city_graph)
+        data = request.get_json(silent=True) or {}
+        overrides = data.get("overrides", [])
+        
+        # Deep copy so we don't permanently alter the static matrix
+        dynamic_graph = copy.deepcopy(city_graph)
+        
+        for ov in overrides:
+            u, v, time = ov.get("u"), ov.get("v"), ov.get("time")
+            if u is not None and v is not None and time is not None:
+                # Assuming undirected graph, traffic affects both directions equally
+                dynamic_graph[u][v] = time
+                dynamic_graph[v][u] = time
+
+        best_path, best_cost = plan_multi_stop_route(dynamic_graph)
 
         if not best_path:
             return jsonify({
@@ -186,15 +201,16 @@ def tsp_endpoint():
 
         route_names = [LOCATIONS[i] for i in best_path]
 
-        # Build leg-by-leg breakdown
+        # Build leg-by-leg breakdown using the dynamic graph
         legs = []
         for k in range(len(best_path) - 1):
             src = best_path[k]
             dst = best_path[k + 1]
+            time_cost = dynamic_graph[src][dst]
             legs.append({
                 "from": LOCATIONS[src],
                 "to": LOCATIONS[dst],
-                "time": city_graph[src][dst] if city_graph[src][dst] != INF else -1
+                "time": time_cost if time_cost != INF else -1
             })
 
         return jsonify({

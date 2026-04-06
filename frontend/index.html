@@ -100,6 +100,21 @@
                 <div class="panel-content">
                     <p class="subtitle">Calculates the optimal multi-stop route to supply all critical locations exactly once, returning to Base.</p>
                     
+                    <div class="control-group traffic-override-group" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 1rem; border: 1px solid rgba(255, 42, 109, 0.15);">
+                        <p style="font-size: 0.8rem; color: var(--secondary); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase;">Simulate Traffic Delay:</p>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+                            <select id="traffic-source" class="custom-select"></select>
+                            <span style="color: var(--text-muted); font-size: 0.8rem;">to</span>
+                            <select id="traffic-dest" class="custom-select"></select>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="number" id="traffic-time" placeholder="Mins" class="custom-input" min="1" style="width: 80px;">
+                            <button id="btn-add-traffic" class="btn primary-btn" style="padding: 0.4rem; font-size: 0.75rem; flex-grow: 1;">Inject Delay</button>
+                            <button id="btn-clear-traffic" class="btn secondary-btn" style="padding: 0.4rem; font-size: 0.75rem; width: auto; display: none;">Clear</button>
+                        </div>
+                        <div id="active-overrides" style="margin-top: 0.75rem; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.25rem;"></div>
+                    </div>
+                    
                     <button id="btn-calc-route" class="btn secondary-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
                         Calculate Optimal Supply Route

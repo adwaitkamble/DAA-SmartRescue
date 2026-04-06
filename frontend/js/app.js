@@ -137,6 +137,68 @@ btnCalcLoadout.addEventListener('click', async () => {
 //  3. TRANSPORT ROUTING PANEL: TSP Branch & Bound
 // ═══════════════════════════════════════════════════════════════
 
+const trafficSource = document.getElementById('traffic-source');
+const trafficDest = document.getElementById('traffic-dest');
+const trafficTime = document.getElementById('traffic-time');
+const btnAddTraffic = document.getElementById('btn-add-traffic');
+const btnClearTraffic = document.getElementById('btn-clear-traffic');
+const overridesDisplay = document.getElementById('active-overrides');
+
+let activeOverrides = [];
+
+// Populate Dropdowns dynamically based on the mapping
+if (trafficSource && trafficDest) {
+    pcmcLocations.forEach((loc, index) => {
+        const optS = document.createElement('option');
+        optS.value = index;
+        optS.textContent = loc.name;
+        trafficSource.appendChild(optS);
+
+        const optD = document.createElement('option');
+        optD.value = index;
+        optD.textContent = loc.name;
+        if (index === 1) optD.selected = true; // default second location
+        trafficDest.appendChild(optD);
+    });
+}
+
+// Hook up Traffic Addition
+if (btnAddTraffic) {
+    btnAddTraffic.addEventListener('click', () => {
+        const u = parseInt(trafficSource.value);
+        const v = parseInt(trafficDest.value);
+        const t = parseInt(trafficTime.value);
+
+        if (u === v) {
+            alert("Source and Destination cannot be the same location!");
+            return;
+        }
+        if (isNaN(t) || t <= 0) {
+            alert("Please enter a valid positive connection time in minutes.");
+            return;
+        }
+
+        activeOverrides.push({ u: u, v: v, time: t });
+        
+        // Update Visual Tag
+        const overrideDiv = document.createElement('div');
+        overrideDiv.innerHTML = `⚠️ ${pcmcLocations[u].name} ↔ ${pcmcLocations[v].name} now <strong>${t} mins</strong>`;
+        overridesDisplay.appendChild(overrideDiv);
+        
+        btnClearTraffic.style.display = 'block';
+        trafficTime.value = '';
+    });
+}
+
+// Ensure clear logic resets graph to normal globally
+if (btnClearTraffic) {
+    btnClearTraffic.addEventListener('click', () => {
+        activeOverrides = [];
+        overridesDisplay.innerHTML = '';
+        btnClearTraffic.style.display = 'none';
+    });
+}
+
 const btnCalcRoute = document.getElementById('btn-calc-route');
 const routeOutput = document.getElementById('route-output');
 
@@ -149,9 +211,13 @@ btnCalcRoute.addEventListener('click', async () => {
     btnCalcRoute.disabled = true;
 
     try {
-        // 2. Fetch TSP result from backend
+        // 2. Fetch TSP result from backend with dynamic traffic
         const response = await fetch(`${API_BASE_URL}/api/tsp`, {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ overrides: activeOverrides })
         });
 
         const data = await response.json();
