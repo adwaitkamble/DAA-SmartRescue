@@ -161,6 +161,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    flex-shrink: 0; /* Prevents panel from squishing and hiding content */
 }
 
 .panel-header {
@@ -338,7 +339,7 @@ input[type=range]::-webkit-slider-runnable-track {
     justify-content: center;
     font-weight: 600;
     position: relative;
-    overflow: hidden;
+    /* Removed overflow: hidden so multiline routes don't clip */
 }
 .route-display.empty {
     border-color: rgba(255,255,255,0.05);
